@@ -14,7 +14,12 @@ heroku create <heroku_app_name>
 heroku git:remote -a [heroku_app_name]
 ```
 
-3. Add `SECRET_KEY` and `DEBUG_VALUE` to `.bash_profile` local file
+3. Add `SECRET_KEY` and `DEBUG_VALUE` to `.bash_profile` local file:
+
+```
+export SECRET_KEY='<your_secret_key'
+export DEBUG_VALUE='True'
+```
 
 4. Then, configure and copy the same settings on Heroku server:
 
@@ -24,6 +29,7 @@ heroku config:set DEBUG_VALUE='False'
 ```
 
 5. Heroku web applications require a `Procfile`. In the `Procfile`, we'll tell Heroku to start a Gunicorn production server and point to that server to our Django project's default WSGI interface. It is located in the root of your project directory. Create a `Procfile` with the following code:  
+
 ```
 web gunicorn <django_project_name>.wsgi
 ```
@@ -31,28 +37,37 @@ web gunicorn <django_project_name>.wsgi
 6. Configure Django project `settings.py` file:
 
     - Update `SECRET_KEY` and `DEBUG`:
-        ```
-        SECRET_KEY = os.environ.get('SECRET_KEY')
-        DEBUG = (os.environ.get('DEBUG_VALUE') == 'True')
-        ```
-	- Update `STATIC_ROOT`. This is where Heroku will find all your static files to serve from your Django project: 
+
+    ```
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    DEBUG = (os.environ.get('DEBUG_VALUE') == 'True')
+    ```
+
+	- Update `STATIC_ROOT`. This is where Heroku will find all your static files to serve from your Django project:
+
     ```
     STATIC_ROOT = os.path.join(BASE_DIR, ‘staticfiles’)
     ```
+
     - Update `ALLOWED_HOSTS` list with your domain you're deploying
     - Install and add `gunicorn` and `django-heroku` packages to `requirements.txt`, as well as other dependencies you've installed. `django-heroku` is a package that automatically and seamlessly configures your Django application to work on Heroku production server, such as database configuration.
+
     ```
     pip install gunicorn django-heroku
     pip freeze > requirements.txt
     ```
+    
     You should have something basic like this:
+
     ```
     django==2.2
     gunicorn==20.0.4
     django-heroku==0.3.1
     ...<other_dependencies_you_installed>
     ```
+
     - Add `django-heroku` code: 
+
     ```
     import django_heroku // top of settings.py
     ... 
